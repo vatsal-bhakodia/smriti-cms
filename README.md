@@ -1,36 +1,139 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Smriti CMS
+
+A Content Management System for managing universities, programs, subjects, and study materials.
+
+## Features
+
+- 🔐 Authentication with NextAuth
+- 🎨 Modern UI with shadcn/ui components
+- 📊 Dashboard with statistics
+- 🏫 Manage Universities, Programs, Subjects, and Study Resources
+- 📁 Cloudinary integration for file uploads
+- 🔒 Domain-restricted public API (GET-only for client apps)
+- 🛡️ Full CRUD API for CMS (authenticated)
+
+## Tech Stack
+
+- **Framework**: Next.js 16
+- **Database**: PostgreSQL with Drizzle ORM
+- **Authentication**: NextAuth.js
+- **UI Components**: shadcn/ui
+- **Styling**: Tailwind CSS
+- **File Upload**: Cloudinary
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ 
+- PostgreSQL database
+- Cloudinary account (for file uploads)
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd smriti-cms
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up environment variables:
+```bash
+cp .env.example .env
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Edit `.env` and add your configuration:
+- `DATABASE_URL`: PostgreSQL connection string
+- `NEXTAUTH_URL`: Your application URL (e.g., http://localhost:3000)
+- `NEXTAUTH_SECRET`: A random secret string
+- `ALLOWED_DOMAINS`: Comma-separated list of allowed domains for public API
+- `CLOUDINARY_CLOUD_NAME`: Your Cloudinary cloud name
+- `CLOUDINARY_API_KEY`: Your Cloudinary API key
+- `CLOUDINARY_API_SECRET`: Your Cloudinary API secret
 
-## Learn More
+4. Run database migrations:
+```bash
+npx drizzle-kit generate
+npx drizzle-kit migrate
+```
 
-To learn more about Next.js, take a look at the following resources:
+5. Create an admin user:
+```bash
+npm run seed:user <email> <password> <name>
+# Example:
+npm run seed:user admin@example.com admin123 "Admin User"
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+6. Start the development server:
+```bash
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+7. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Deploy on Vercel
+## API Routes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Public API (GET-only, domain-restricted)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `GET /api/public/universities` - Get all universities
+- `GET /api/public/programs?universityId=<id>` - Get programs
+- `GET /api/public/specializations?programId=<id>` - Get specializations
+- `GET /api/public/semesters?programId=<id>&specializationId=<id>` - Get semesters
+- `GET /api/public/subjects?termId=<id>` - Get subjects
+- `GET /api/public/study-resources?subjectId=<id>` - Get study resources
+
+### CMS API (Full CRUD, authenticated)
+
+- `GET/POST /api/cms/universities` - Manage universities
+- `GET/PUT/DELETE /api/cms/universities/[id]` - Manage specific university
+- `GET/POST /api/cms/programs` - Manage programs
+- `GET/PUT/DELETE /api/cms/programs/[id]` - Manage specific program
+- `GET/POST /api/cms/subjects` - Manage subjects
+- `GET/PUT/DELETE /api/cms/subjects/[id]` - Manage specific subject
+- `POST /api/cms/upload` - Upload files to Cloudinary
+
+## Project Structure
+
+```
+smriti-cms/
+├── app/
+│   ├── api/              # API routes
+│   │   ├── auth/         # NextAuth routes
+│   │   ├── public/       # Public GET-only API
+│   │   └── cms/          # CMS CRUD API
+│   ├── dashboard/        # CMS dashboard pages
+│   ├── login/            # Login page
+│   └── layout.tsx        # Root layout
+├── components/
+│   ├── ui/               # shadcn/ui components
+│   ├── sidebar.tsx       # Sidebar navigation
+│   └── data-table.tsx    # Reusable data table
+├── lib/
+│   ├── db/               # Database configuration
+│   ├── auth.ts           # NextAuth configuration
+│   └── api-middleware.ts # API middleware
+└── scripts/
+    └── seed-user.ts      # User seeding script
+```
+
+## Usage
+
+1. **Login**: Navigate to `/login` and use your admin credentials
+2. **Dashboard**: View statistics and overview
+3. **Manage Content**: Use the sidebar to navigate to:
+   - Universities: Add/edit/delete universities
+   - Programs: Manage academic programs
+   - Subjects: Manage subjects with syllabus and resources
+
+## Environment Variables
+
+See `.env.example` for all required environment variables.
+
+## License
+
+MIT
